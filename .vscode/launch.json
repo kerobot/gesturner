@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: GesTurner (Poetry)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/gesturner/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "python": "${workspaceFolder}/.venv/Scripts/python.exe"
+        }
+    ]
+}
