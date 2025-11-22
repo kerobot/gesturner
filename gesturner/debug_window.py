@@ -8,7 +8,7 @@ class DebugWindow:
         self.window_name = window_name
         self.window_initialized = False
 
-    def update(self, frame, is_detected, last_key_sent_time):
+    def update(self, frame, mouth_detected, gaze_direction, last_key_sent_time):
         # プライバシー保護処理: 解像度を落として二値化
         h, w = frame.shape[:2]
         # 1/8に縮小
@@ -26,12 +26,15 @@ class DebugWindow:
         display_frame = cv2.cvtColor(display_frame, cv2.COLOR_GRAY2BGR)
 
         # 検出状況を表示する
-        status_text = "Detected" if is_detected else "Neutral"
-        cv2.putText(display_frame, f"Status: {status_text}", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        status_text = "Mouth: Detected" if mouth_detected else "Mouth: Neutral"
+        cv2.putText(display_frame, status_text, (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        
+        gaze_text = f"Gaze: {gaze_direction}" if gaze_direction else "Gaze: --"
+        cv2.putText(display_frame, gaze_text, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
         
         # キー送信直後の場合はキー押下を表示する
         if time.time() - last_key_sent_time < 1.0:
-            cv2.putText(display_frame, "KEY SENT", (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+            cv2.putText(display_frame, "KEY SENT", (10, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
         # 撮影したフレームを表示
         cv2.imshow(self.window_name, display_frame)

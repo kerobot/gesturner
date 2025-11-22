@@ -2,9 +2,10 @@ import cv2
 import mediapipe as mp
 
 class GazeDetector:
-    def __init__(self, down_threshold=0.6):
+    def __init__(self, down_threshold=0.6, up_threshold=0.4):
         self.face_mesh = mp.solutions.face_mesh.FaceMesh(refine_landmarks=True)
         self.down_threshold = down_threshold
+        self.up_threshold = up_threshold
 
     def detect_gaze(self, frame):
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -37,5 +38,10 @@ class GazeDetector:
 
                 avg_ratio = (left_ratio + right_ratio) / 2.0
                 
-                return avg_ratio > self.down_threshold
-        return False
+                if avg_ratio > self.down_threshold:
+                    return "DOWN"
+                elif avg_ratio < self.up_threshold:
+                    return "UP"
+                else:
+                    return "NEUTRAL"
+        return None
