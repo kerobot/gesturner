@@ -12,6 +12,7 @@ opencv-python = "^4.10.0"
 mediapipe = "^0.10.14"
 pyautogui = "^0.9.54"
 pywin32 = "^306"
+types-pyautogui = "^0.9.3.20241230"
 
 [tool.poetry.scripts]
 gesturner = "gesturner.main:run"

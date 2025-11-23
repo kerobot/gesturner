@@ -1,13 +1,36 @@
+from __future__ import annotations
+
 import cv2
-import mediapipe as mp
+import mediapipe as mp  # type: ignore
+import numpy as np
+
 
 class MouthDetector:
-    def __init__(self, threshold=0.05):
-        self.face_mesh = mp.solutions.face_mesh.FaceMesh(refine_landmarks=True)
-        self.threshold = threshold
+    """MediaPipeを使用して口の開閉を検知するクラス。
 
-    def detect_gesture(self, frame):
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    顔のランドマークから口の開き具合を計算し、
+    閾値を超えたら口が開いていると判定します。
+    """
+
+    def __init__(self, threshold: float = 0.05) -> None:
+        """MouthDetectorを初期化します。
+
+        Args:
+            threshold: 口の開き判定の閾値（顔の高さに対する比率）
+        """
+        self.face_mesh: mp.solutions.face_mesh.FaceMesh = mp.solutions.face_mesh.FaceMesh(refine_landmarks=True)  # type: ignore
+        self.threshold: float = threshold
+
+    def detect_gesture(self, frame: np.ndarray) -> bool:
+        """フレームから口の開閉を検知します。
+
+        Args:
+            frame: 入力画像（BGR形式のnumpy配列）
+
+        Returns:
+            口が開いている場合True、閉じている場合False
+        """
+        rgb_frame: np.ndarray = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.face_mesh.process(rgb_frame)
 
         if results.multi_face_landmarks:
@@ -21,15 +44,15 @@ class MouthDetector:
                 chin = face_landmarks.landmark[152]
 
                 # 顔の縦幅
-                face_height = chin.y - forehead.y
+                face_height: float = chin.y - forehead.y
 
                 # 口の開き具合
-                mouth_open_dist = lower_lip.y - upper_lip.y
+                mouth_open_dist: float = lower_lip.y - upper_lip.y
 
                 # 顔の大きさに対する口の開きの比率
-                if face_height > 0:
-                    ratio = mouth_open_dist / face_height
+                if face_height > 0.0:
+                    ratio: float = mouth_open_dist / face_height
                     if ratio > self.threshold:
                         return True
-        
+
         return False
